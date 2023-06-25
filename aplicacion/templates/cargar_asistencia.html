@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargar Asistencia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #000;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #377ba8;
+        }
+
+        h3 {
+            text-align: center;
+            margin-top: 20px;
+            color: #123A42;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        table {
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .btn-round {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px; /* Ajusta el padding para cambiar el tamaño del botón */
+            border-radius: 50px;
+            background-color: #ffffff; /* Fondo blanco */
+            color: #377ba8; /* Letras negras */
+            text-decoration: none;
+        }
+
+        .myDiv a {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: #ffffff; /* Fondo blanco */
+            color: #377ba8; /* Letras azules */
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cargar Asistencia</h1>
+        <form action="/guardar_asistencia" method="POST">
+            <h3>Fecha: {{ fecha }}</h3>
+            {% if division == "1" %}
+                <h3>División: Aula</h3>
+            {% elif division == "2" %}
+                <h3>División: Educación Física</h3>
+            {% endif %}
+            <h3>Curso: {{ anio }}</h3>
+            <table>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Asistencia</th>
+                    <th>Justificación</th>
+                </tr>
+                {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante[2] }} {{ estudiante[1] }}</td>
+                    <td>
+                        <input type="text" id="asistencia-{{ estudiante[0] }}" name="asistencia-{{ estudiante[0] }}" placeholder="s/n" required>
+                    </td>
+                    <td>
+                        <input type="text" id="justificacion-{{ estudiante[0] }}" name="justificacion-{{ estudiante[0] }}" placeholder="Justificación">
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <input type="hidden" name="fecha" value="{{ fecha }}">
+            <input type="hidden" name="division" value="{{ division }}">
+            <input type="hidden" name="anio" value="{{ anio }}">
+            <button type="submit" class="btn-round">Guardar Asistencia</button>
+            <div class="myDiv">
+                <br><br><a href="{{ url_for('inicio') }}">Inicio</a><br><br>
+            </div> 
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+

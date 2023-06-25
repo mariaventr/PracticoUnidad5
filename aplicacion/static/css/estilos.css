@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  color: rgb(0, 0, 0);
+  background-color: #f2f2f2;
+}
+
+header {
+  background-color: #DFB887;
+  height: 10%;
+  width: 100%;
+  opacity: .9;
+  margin-bottom: 2%;
+}
+
+h1 {
+  font-family: serif;
+  text-align: center;
+  color: #377ba8;
+}
+
+h2 {
+  font-size: 3em;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: -2px;
+}
+
+p {
+  margin-left: 2em;
+  color: #123A42;
+}
+
+ul {
+  list-style-type: none;
+  margin-left: 2em;
+  padding: 0;
+  width: 200px;
+  background-color: transparent;;
+}
+
+li a {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #555;
+  color: white;
+}
+
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  margin-left: 2em;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: left;
+}
+
+.container {
+  padding-top: 2%;
+  width: 50%;
+  margin: 0 auto;
+  background-color: transparent;
+}
+
+.container label {
+  font-weight: bold;
+  margin-bottom: 2em;
+  margin-left: 2em;
+  color: #123A42;
+}
+
+.container input,
+.container button,
+.container textarea,
+.container select {
+  margin-bottom: 1em;
+  margin-left: 2em;
+  width: 80%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.container textarea {
+  min-height: 12em;
+  resize: vertical;
+}
+
+.menu {
+  float: right;
+  margin-top: 8px;
+}
+
+.menu li {
+  display: inline;
+}
+
+.menu li + li {
+  margin-left: 35px;
+}
+
+.menu li a {
+  color: #444;
+  text-decoration: none;
+}
+
+.myDiv {
+  margin-bottom: 2em;
+  margin-right: 4em;
+  text-align: center;
+}
+
+
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Inicio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+      color: #377ba8;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    a {
+      display: block;
+      padding: 10px;
+      text-align: center;
+      color: #377ba8;
+      background-color: #fff;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      background-color: #377ba8;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Colegio San Miguel</h1>
+  <ul>
+    <li><a class="btn-round" href="{{ url_for('login_preceptor') }}">Preceptor</a></li>
+    <li><a class="btn-round" href="{{ url_for('login_padre') }}">Padre</a></li>
+  </ul>
+</body>
+</html>
+
+

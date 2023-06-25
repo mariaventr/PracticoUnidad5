@@ -1,0 +1,33 @@
+{% extends "base_template.html" %}
+{% block title %}Asistencia{% endblock %}
+{% block content %}
+    <h1>Asistencia</h1>
+    <div style="display: flex; justify-content: center;">
+        <form action="" method="POST">
+            <label for="anio">Selecciona el año del curso:</label>
+            <select id="anio" name="anio">
+                {% for anio in anios_cursos %}
+                    <option value="{{ anio }}">{{ anio }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <label for="division">Selecciona la división:</label>
+            <select id="division" name="division">
+                {% if "1" in division and "2" in division %}
+                    <option value="1">Aula</option>
+                    <option value="2">Educación Física</option>
+                {% elif "1" in division %}
+                    <option value="1">Aula</option>
+                {% elif "2" in division %}
+                    <option value="2">Educación Física</option>
+                {% endif %}
+            </select>
+            <br><br>
+            <label for="fecha">Selecciona la fecha:</label>
+            <input type="date" id="fecha" name="fecha">
+            <br><br>
+            <input type="submit" value="Registrar Asistencia">
+        </form>
+    </div>
+{% endblock %}
+

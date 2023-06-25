@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Opciones Preceptor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+      color: #377ba8;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    a {
+      display: block;
+      padding: 10px;
+      text-align: center;
+      color: #377ba8;
+      background-color: #fff;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      background-color: #377ba8;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Opciones</h1>
+  <ul>
+    <li><a href="{{ url_for('registrar_asistencia', usuario_id=usuario.id) }}">Ir a Asistencia</a></li>
+    <li><a href="{{ url_for('informe_detallado', usuario_id=usuario.id) }}">Ir a Informes</a></li>
+  </ul>
+</body>
+</html>
+
+
+

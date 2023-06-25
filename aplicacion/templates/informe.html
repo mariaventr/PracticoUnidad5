@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargar Asistencia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #000;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #377ba8;
+        }
+
+        table {
+            margin: 0 auto; /* Centrar la tabla horizontalmente */
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px; /* Ajustar el ancho máximo de la tabla */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #377ba8;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+        .myDiv a {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: #ffffff; /* Fondo blanco */
+            color: #377ba8; /* Letras azules */
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Informe de Estudiantes</h1>
+    <table>
+        <tr>
+            <th>Estudiante</th>
+            <th>Aula Presente</th>
+            <th>Educación Física Presente</th>
+            <th>Aula Ausencia Justificadas</th>
+            <th>Aula Ausencia Injustificadas</th>
+            <th>Educación Física Ausencia Justificadas</th>
+            <th>Educación Física Ausencia Injustificadas</th>
+            <th>Total Inasistencias</th>
+        </tr>
+        {% for detalle in informe %}
+        <tr>
+            <td>{{ detalle.estudiante[2] }} {{ detalle.estudiante[1] }}</td>
+            <td>{{ detalle.asistencias_aula }}</td>
+            <td>{{ detalle.asistencias_educacion_fisica }}</td>
+            <td>{{ detalle.ausencias_justificadas_aula }}</td>
+            <td>{{ detalle.ausencias_injustificadas_aula }}</td>
+            <td>{{ detalle.ausencias_justificadas_educacion_fisica }}</td>
+            <td>{{ detalle.ausencias_injustificadas_educacion_fisica }}</td>
+            <td>{{ detalle.total_inasistencias }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="myDiv">
+        <br><br><a href="{{ url_for('inicio') }}">Inicio</a><br><br>
+    </div> 
+</body>
+</html>
+
