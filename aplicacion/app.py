@@ -14,20 +14,7 @@ from models import Preceptor
 @app.route('/')
 def inicio():
 	return render_template('inicio.html')
-'''
-@app.route('/nuevo_usuario', methods = ['GET','POST'])
-def nuevo_usuario():   
-	if request.method == 'POST':
-		if not request.form['nombre'] or not request.form['email'] or not request.form['password']:
-			return render_template('error.html', error="Los datos ingresados no son correctos...")
-		else:
-			nuevo_usuario = Preceptor(nombre=request.form['nombre'], apellido=request.form['apellido'], correo = request.form['email'], clave=generate_password_hash(request.form['password']))       
-			db.session.add(nuevo_usuario)
-			db.session.commit()
-			return render_template('aviso.html', mensaje="El usuario se registró exitosamente")
-	return render_template('nuevo_usuario.html')
-'''
-
+	
 def validatePreceptor(correo, clave):
     con = sqlite3.connect('datos.db')
     completion = False
