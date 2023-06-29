@@ -2,11 +2,11 @@
 {% block title %}Informe{% endblock %}
 {% block content %}
     <h1>Asistencia</h1>
-    <form action="", method="POST">
+    <form action="" method="POST">
         <label for="anio">Selecciona el año del curso:</label>
         <select id="anio" name="anio">
-            {% for anio in anios_cursos %}
-                <option value="{{ anio }}">{{ anio }}</option>
+            {% for curso in cursos %}
+                <option value="{{ curso.anio }}">{{ curso.anio }}</option>
             {% endfor %}
         </select>
         <input type="submit" value="Mostrar Informe">
