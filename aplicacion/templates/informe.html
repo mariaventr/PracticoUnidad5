@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cargar Asistencia</title>
+    <title>Informe de Estudiantes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
     <style>
         body {
@@ -71,7 +71,7 @@
         </tr>
         {% for detalle in informe %}
         <tr>
-            <td>{{ detalle.estudiante[2] }} {{ detalle.estudiante[1] }}</td>
+            <td>{{ detalle.estudiante.nombre }} {{ detalle.estudiante.apellido }}</td>
             <td>{{ detalle.asistencias_aula }}</td>
             <td>{{ detalle.asistencias_educacion_fisica }}</td>
             <td>{{ detalle.ausencias_justificadas_aula }}</td>
