@@ -82,12 +82,12 @@
                 </tr>
                 {% for estudiante in estudiantes %}
                 <tr>
-                    <td>{{ estudiante[2] }} {{ estudiante[1] }}</td>
+                    <td>{{ estudiante.apellido }} {{ estudiante.nombre }}</td>
                     <td>
-                        <input type="text" id="asistencia-{{ estudiante[0] }}" name="asistencia-{{ estudiante[0] }}" placeholder="s/n" required>
+                        <input type="text" id="asistencia-{{ estudiante.id }}" name="asistencia-{{ estudiante.id }}" placeholder="s/n" required>
                     </td>
                     <td>
-                        <input type="text" id="justificacion-{{ estudiante[0] }}" name="justificacion-{{ estudiante[0] }}" placeholder="Justificación">
+                        <input type="text" id="justificacion-{{ estudiante.id }}" name="justificacion-{{ estudiante.id }}" placeholder="Justificación">
                     </td>
                 </tr>
                 {% endfor %}
