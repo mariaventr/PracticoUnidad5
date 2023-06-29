@@ -2,39 +2,28 @@ from datetime import datetime
 from flask import Flask, request, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
+
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 from models import db 
-from models import Preceptor
+from models import Preceptor, Estudiante, Curso, Asistencia
 		
 
 @app.route('/')
 def inicio():
 	return render_template('inicio.html')
-	
+
 def validatePreceptor(correo, clave):
-    con = sqlite3.connect('datos.db')
     completion = False
     usuario_actual = None
-    with con:
-        cur = con.cursor()
-        cur.execute("SELECT correo, clave, nombre, id, apellido FROM preceptor")
-        rows = cur.fetchall()
-        for row in rows:
-            dbCorreo = row[0]
-            dbClave = row[1]
-            if dbCorreo == correo:
-                completion = check_password_hash(clave, dbClave)
-                if completion:
-                    usuario_actual = Preceptor.query.filter_by(id=row[3]).first()
-                    db.session.commit()
-                    if usuario_actual is None:
-                        usuario_actual = Preceptor(id=row[3], nombre=row[2], apellido=row[4], correo=correo, clave=clave)
-                        db.session.add(usuario_actual)
-                        db.session.commit()
+    usuario_actual = Preceptor.query.filter_by(correo=str(correo)).first()
+    dbClave = usuario_actual.clave
+    completion = check_password_hash(clave, dbClave)
+    print(completion)
+    if completion is not True:
+        usuario_actual = None
     return usuario_actual
 
 
@@ -58,58 +47,46 @@ def login_padre():
 
 @app.route('/asistencia/<int:usuario_id>', methods=['GET', 'POST'])
 def registrar_asistencia(usuario_id):
-    con = sqlite3.connect('datos.db')
-    with con:
-        cur = con.cursor()
-        cur.execute("SELECT id, anio, division FROM curso WHERE idpreceptor=?", (usuario_id,))
-        rows = cur.fetchall()
-        cursos= [row[1] for row in rows]
-        division= [row[2] for row in rows]
+    cursos = Curso.query.filter_by(idpreceptor=int(usuario_id)).all()
+    anios_cursos = [curso.anio for curso in cursos]
+    division = [curso.division for curso in cursos]
+    print(division)
 
     if request.method == 'POST':
         curso_id = request.form['anio']
         division = request.form['division']
         fecha = request.form['fecha']
-        cur.execute("SELECT id, nombre, apellido,dni, idcurso,idpadre FROM estudiante WHERE idcurso=? ORDER BY nombre, apellido", (curso_id,))
-        estudiantes = cur.fetchall()
-
+        estudiantes = Estudiante.query.filter_by(idcurso=int(curso_id)).order_by(Estudiante.nombre, Estudiante.apellido).all()
         return render_template('cargar_asistencia.html', estudiantes=estudiantes, fecha=fecha, division=division, anio=curso_id)
 
-    return render_template('asistencia.html', anios_cursos=cursos, division=division)
+    return render_template('asistencia.html', anios_cursos=anios_cursos, division=division)
 
 @app.route('/guardar_asistencia', methods=['POST'])
 def guardar_asistencia():
     fecha = request.form['fecha']
     division = request.form['division']
-    anio=request.form['anio']
+    anio = request.form['anio']
 
     # Obtener estudiantes desde la base de datos
-    con = sqlite3.connect('datos.db')
-    cur = con.cursor()
-    cur.execute("SELECT id, nombre, apellido, idcurso FROM estudiante ORDER BY nombre, apellido")
-    estudiantes = cur.fetchall()
-    con.close()
+    estudiantes = Estudiante.query.order_by(Estudiante.nombre, Estudiante.apellido).all()
 
     asistencias = []
 
     for estudiante in estudiantes:
-        if int(estudiante[3]) == int(anio):
-            estudiante_id = estudiante[0]
-            asistencia_key = f'asistencia-{estudiante_id}'
-            justificacion_key = f'justificacion-{estudiante_id}'
+        if estudiante.idcurso == int(anio):
+            asistencia_key = f'asistencia-{estudiante.id}'
+            justificacion_key = f'justificacion-{estudiante.id}'
             asistencia = request.form.get(asistencia_key, '')
             justificacion = request.form.get(justificacion_key, '')
-            asistencias.append((estudiante_id, asistencia, justificacion))
+            asistencias.append((estudiante.id, asistencia, justificacion))
 
-    con = sqlite3.connect('datos.db')
-    cur = con.cursor()
     for asistencia in asistencias:
         estudiante_id, asistio, justificacion = asistencia
-        cur.execute("INSERT INTO asistencia (fecha, codigoclase, asistio, justificacion, idestudiante) VALUES (?, ?, ?, ?, ?)",
-                    (fecha, division, asistio, justificacion, estudiante_id))
+        fecha_obj = datetime.strptime(fecha, '%Y-%m-%d')
+        asistencia_obj = Asistencia(fecha=fecha_obj, codigoclase=division, asistio=asistio, justificacion=justificacion, idestudiante=estudiante_id)
+        db.session.add(asistencia_obj)
 
-    con.commit()
-    con.close()
+    db.session.commit()
 
     return render_template("guardar_asistencia.html")
 
@@ -118,43 +95,34 @@ def guardar_asistencia():
 @app.route('/informe_detallado/<int:usuario_id>', methods=['GET', 'POST'])
 def informe_detallado(usuario_id):
     informe = []
-    con = sqlite3.connect('datos.db')
-    with con:
-        cur = con.cursor()
-        cur.execute("SELECT id, anio FROM curso WHERE idpreceptor=?", (usuario_id,))
-        rows = cur.fetchall()
-        cursos = [row[1] for row in rows]
+    cursos = Curso.query.filter_by(idpreceptor=usuario_id).all()
 
-        if request.method == 'POST':
-            curso_id = request.form['anio']
+    if request.method == 'POST':
+        curso_id = request.form['anio']
+        print(curso_id)
+        estudiantes = Estudiante.query.filter_by(idcurso=int(curso_id)).order_by(Estudiante.nombre, Estudiante.apellido).all()
+        for estudiante in estudiantes:
+            asistencias = Asistencia.query.filter_by(idestudiante=int(estudiante.id)).all()
+            asistencias_aula = sum(1 for asistencia in asistencias if asistencia.asistio == 's' and asistencia.codigoclase == 1)
+            asistencias_educacion_fisica = sum(1 for asistencia in asistencias if asistencia.asistio == 's' and asistencia.codigoclase == 2)
+            ausencias_justificadas_aula = sum(1 for asistencia in asistencias if asistencia.asistio == 'n' and asistencia.codigoclase == 1 and asistencia.justificacion != "")
+            ausencias_injustificadas_aula = sum(1 for asistencia in asistencias if asistencia.asistio == 'n' and asistencia.codigoclase == 1 and asistencia.justificacion == "")
+            ausencias_justificadas_educacion_fisica = sum(1 for asistencia in asistencias if asistencia.asistio == 'n' and asistencia.codigoclase == 2 and asistencia.justificacion != "")
+            ausencias_injustificadas_educacion_fisica = sum(1 for asistencia in asistencias if asistencia.asistio == 'n' and asistencia.codigoclase == 2 and asistencia.justificacion == "")
+            total_inasistencias = ausencias_injustificadas_aula + (ausencias_injustificadas_educacion_fisica * 0.5)
+            informe.append({
+                'estudiante': estudiante,
+                'asistencias_aula': asistencias_aula,
+                'asistencias_educacion_fisica': asistencias_educacion_fisica,
+                'ausencias_justificadas_aula': ausencias_justificadas_aula,
+                'ausencias_injustificadas_aula': ausencias_injustificadas_aula,
+                'ausencias_justificadas_educacion_fisica': ausencias_justificadas_educacion_fisica,
+                'ausencias_injustificadas_educacion_fisica': ausencias_injustificadas_educacion_fisica,
+                'total_inasistencias': total_inasistencias
+            })
+        return render_template('informe.html', estudiantes=estudiantes, informe=informe)
 
-            cur.execute("SELECT id, nombre, apellido, dni, idcurso, idpadre FROM estudiante WHERE idcurso=? ORDER BY nombre, apellido", (curso_id,))
-            estudiantes = cur.fetchall()
-
-            for estudiante in estudiantes:
-                cur.execute("SELECT id, fecha, codigoclase,asistio, justificacion,idestudiante  FROM asistencia WHERE idestudiante=?", (estudiante[0],))
-                asistencias = cur.fetchall()
-                asistencias_aula = sum(1 for asistencia in asistencias if asistencia[3] == 's' and asistencia[2] == 1)
-                asistencias_educacion_fisica = sum(1 for asistencia in asistencias if asistencia[3] == 's' and asistencia[2] == 2)
-                ausencias_justificadas_aula = sum(1 for asistencia in asistencias if asistencia[3] == 'n' and asistencia[2] == 1 and asistencia[4] != "")
-                ausencias_injustificadas_aula = sum(1 for asistencia in asistencias if asistencia[3] == 'n' and asistencia[2] == 1 and asistencia[4] == "")
-                ausencias_justificadas_educacion_fisica = sum(1 for asistencia in asistencias if asistencia[3] == 'n' and asistencia[2] == 2 and asistencia[4] != "")
-                ausencias_injustificadas_educacion_fisica = sum(1 for asistencia in asistencias if asistencia[3] == 'n' and asistencia[2] == 2 and asistencia[4] == "")
-                total_inasistencias = ausencias_injustificadas_aula + (ausencias_injustificadas_educacion_fisica * 0.5)
-                informe.append({
-                    'estudiante': estudiante,
-                    'asistencias_aula': asistencias_aula,
-                    'asistencias_educacion_fisica': asistencias_educacion_fisica,
-                    'ausencias_justificadas_aula': ausencias_justificadas_aula,
-                    'ausencias_injustificadas_aula': ausencias_injustificadas_aula,
-                    'ausencias_justificadas_educacion_fisica': ausencias_justificadas_educacion_fisica,
-                    'ausencias_injustificadas_educacion_fisica': ausencias_injustificadas_educacion_fisica,
-                    'total_inasistencias': total_inasistencias
-                })
-
-            return render_template('informe.html', estudiantes=estudiantes, informe=informe)
-    
-        return render_template('informe_detallado.html', anios_cursos=cursos)
+    return render_template('informe_detallado.html', cursos=cursos)
 
 
 
